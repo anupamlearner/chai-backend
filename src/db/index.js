@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 
-const connetDB = async () => {
+const connectDB = async () => {
   try {
     const URI = process.env.MONGODB_URI;
     const connectionInstance = await mongoose.connect(URI, {
-      dbName: "chai-backend",
+      dbName: DB_NAME,
     });
-    console.clear();
+    console.log("...");
     console.log(
-      `\n----> MongoDB connected ✅\n----> DB HOST:  ${connectionInstance.connection.host}`
+      `----> MongoDB connected ✅\n----> DB HOST:  ${connectionInstance.connection.host}`
     );
   } catch (error) {
     console.log("MONGODB connection failed 😋 \n", error);
@@ -17,4 +17,4 @@ const connetDB = async () => {
   }
 };
 
-export default connetDB;
+export default connectDB;
