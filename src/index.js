@@ -2,7 +2,6 @@
 // dns.setServers(["8.8.8.8", "8.8.4.4"]);
 // dns.setServers(["1.1.1.1", "1.0.0.1"]);
 import { app } from "./app.js";
-import { DB_NAME } from "./constants.js";
 
 // require("dotenv").config({ path: "./env" });
 
