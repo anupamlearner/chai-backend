@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "dns": "^0.2.2",
     "eslint": "^10.4.0",
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
@@ -24,11 +23,13 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.2",
-    "mongoose-aggregate-paginate-v2": "^1.1.4"
+    "mongoose-aggregate-paginate-v2": "^1.1.4",
+    "multer": "^2.1.1"
   }
 }
