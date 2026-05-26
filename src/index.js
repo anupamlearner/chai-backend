@@ -36,7 +36,7 @@ import express from "express";
       throw error;
     });
     app.listen(process.env.PORT, () => {
-      console.log(`App i slistening on port ${process.env.PORT}`);
+      console.log(`App is listening on port ${process.env.PORT}`);
     });
   } catch (error) {
     console.error("ERROR", error);
