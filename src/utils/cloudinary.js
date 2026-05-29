@@ -8,6 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
 });
 
+// Upload function
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
@@ -26,4 +27,29 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { uploadOnCloudinary };
+// helper: extract public_id
+const getPublicIdFromUrl = (url) => {
+  if (!url) return null;
+
+  const fileName = url.split("/").pop(); // avatar123.jpg
+  const publicId = fileName.split(".")[0]; // avatar123
+
+  return publicId;
+};
+
+// delete function
+const deleteFromCloudinary = async (url) => {
+  try {
+    if (!url) return null;
+
+    const publicId = getPublicIdFromUrl(url);
+    if (!publicId) return null;
+
+    return await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.log("Cloudinary delete error:", error);
+    return null;
+  }
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary };
