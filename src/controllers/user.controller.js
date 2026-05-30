@@ -143,7 +143,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with email or username already exists");
   }
 
-  console.log(req.files);
+  // console.log(req.files);
 
   // (4) Get avatar and cover image file paths
   // (4) Helper function to safely get uploaded file path
@@ -577,7 +577,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
   // (1) Validate uploaded file
   const coverImageLocalPath = req.file?.path;
-  console.log("FILE:", req.file);
+  // console.log("FILE:", req.file);
 
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover image file is missing");
