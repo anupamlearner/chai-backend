@@ -1,48 +1,45 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
-// Configuration
+// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload function
+// Upload file to Cloudinary
 const uploadOnCloudinary = async (localFilePath) => {
   try {
+    // nothing to upload
     if (!localFilePath) return null;
+
+    // upload file
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
     });
-    // File has been uploaded successfully.
-    // console.log("File has been uploaded to cloudinary", response.url);
+
+    // remove temporary local file after successful upload
     fs.unlinkSync(localFilePath);
+
+    // response contains secure_url, public_id, etc.
     return response;
   } catch (error) {
-    console.log(error);
-    fs.unlinkSync(localFilePath); //remove the
-    // locally saved temporary file as upload on cloudinary has been completed
+    console.log("Cloudinary upload error:", error);
+
+    // remove temporary local file if it exists
+    if (localFilePath) {
+      fs.unlinkSync(localFilePath);
+    }
+
     return null;
   }
 };
 
-// helper: extract public_id
-const getPublicIdFromUrl = (url) => {
-  if (!url) return null;
-
-  const fileName = url.split("/").pop(); // avatar123.jpg
-  const publicId = fileName.split(".")[0]; // avatar123
-
-  return publicId;
-};
-
-// delete function
-const deleteFromCloudinary = async (url) => {
+// Delete file from Cloudinary using publicId
+const deleteFromCloudinary = async (publicId) => {
   try {
-    if (!url) return null;
-
-    const publicId = getPublicIdFromUrl(url);
+    // nothing to delete
     if (!publicId) return null;
 
     return await cloudinary.uploader.destroy(publicId);
