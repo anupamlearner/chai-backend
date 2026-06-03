@@ -638,6 +638,92 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "User cover image updated successfully"));
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { foundUser } = req.params;
+  if (!foundUser?.trim()) {
+    throw new ApiError(400, "Username is missing");
+  }
+  const channel = await User.aggregate([
+    {
+      // NOTE:
+      // $match: {
+      //   actualNameInModel: localScopedVariable.toLowerCase(),
+      // },
+      $match: {
+        userName: foundUser?.toLowerCase(),
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions", // collection to join with
+        localField: "_id", // field in the current User document
+        foreignField: "channel", // field in Subscription documents
+        as: "subscribers", // name of the resulting array
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions", // collection to join with
+        localField: "_id", // field in the current User document
+        foreignField: "subscriber", // field in Subscription documents
+        as: "subscribedTo", // name of the resulting Array
+      },
+    },
+    {
+      $addFields: {
+        subscriberCount: {
+          $size: "$subscribers", // count documents inside the "subscribers" Array
+        },
+
+        channelsSubscribedToCount: {
+          $size: "$subscribedTo", // count documents inside "subscribedTo" Array
+        },
+
+        isSubscribed: {
+          $cond: {
+            if: {
+              $in: [
+                req.user?._id, // current logged-in user's id
+                // 1. MongoDB looks at every object inside the array called "subscribers"
+                // 1.a "subscribers Array" created in the lookup pipeline at above stage
+                // 2. then it extracts only the subscriber field from each Object.
+                // 3. Create a new array from those extracted values.
+                // "$arrayName.fieldName"
+                // From every object in arrayName, give me the value of fieldName.
+                "$subscribers.subscriber", // new array
+              ],
+            },
+            then: true, // user is a subscriber
+            else: false, // user is not a subscriber
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        fullName: 1,
+        userName: 1,
+        subscriberCount: 1,
+        channelsSubscribedToCount: 1,
+        isSubscribed: 1,
+        avatar: 1,
+        coverImage: 1,
+        email: 1,
+      },
+    },
+  ]);
+
+  console.log(channel);
+  if (!channel?.length) {
+    throw new ApiError(400, "Channel does not exist");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, channel[0], "User channel fetched successfully")
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -648,4 +734,5 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateUserCoverImage,
+  getUserChannelProfile,
 };
